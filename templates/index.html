@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+    body{
+        background: #cd78ff;
+    }
+    .container{
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .header{
+        position: fixed;
+        background: #acd45b;
+        padding: 8px 13px;
+        border-bottom: 1px solid #fff;
+        top: 0;
+        width:100%;
+        right: 0;
+        left: 0;
+        z-index: 1000;
+    }
+    .header h1{
+        font-size: 1.8rem;
+        color: #fff;
+    }
+    #chat-log{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: left;
+        position: relative;
+        top: 18vh;
+        bottom: 18vh;
+        font-size: 1rem;
+    }
+    .chat-input{
+        position: fixed;
+        display: flex;
+        background: #acd45b;
+        justify-content: center;
+        bottom: 0;
+        width: 100%;
+        padding: 10px 15px;
+        border-top: 1px solid #000000;
+        z-index: 1000;
+    }
+    .chat-input input{
+        width: 60%;
+        height: 5vh;
+        padding: 15px 10px;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 18px;
+    }
+    .chat-input button{
+        width: 15%;
+        margin-left: 1.2rem;
+        padding: 15px 10px;
+        border: none;
+        background: #b12cd6;
+        border-radius: 50%;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <div class="header">
+       <h1>Chat App</h1>
+    </div>
+        
+        <div id="chat-log"></div>
+        
+      <div class="chat-input">
+       <input id="message-input" type="text" placeholder="Type a message...">
+       <button id="send-btn">Send</button>
+      </div>
+    </div>
+    
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+    const socket = io();
+    const sendBtn=document.querySelector('#send-btn');
+    
+    sendBtn.addEventListener('click', ()=>{
+        messageInput=document.querySelector('#message-input');
+        message=messageInput.value.trim();
+        if(message){
+            socket.emit('new_message', {message});
+            messageInput.value='';
+        }
+    });
+    
+    socket.on('new_message', (data)=>{
+        const chatLog=document.querySelector('#chat-log');
+        const newMessage=document.createElement('p');
+        newMessage.textContent=data.message;
+        chatLog.appendChild(newMessage);
+    });
+    
+    socket.on('connect', (data)=>{
+       console.log(data.data);
+    });
+    
+    socket.on('disconnect', (data)=>{
+       console.log(data.data);
+    });
+    
+    </script>
+</body>
+</html>
